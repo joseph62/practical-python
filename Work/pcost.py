@@ -14,12 +14,11 @@ def portfolio_cost(filename):
 
     total = 0
 
-    for row in rows:
-        symbol = row["name"]
+    for row_number, row in enumerate(rows, start=1):
         try:
             total += int(row["shares"]) * float(row["price"])
         except ValueError:
-            print(f"Warning! Unable to parse shares or price for {symbol!r}")
+            print(f"Row {row_number}: Bad row: {row}")
 
     return total
 

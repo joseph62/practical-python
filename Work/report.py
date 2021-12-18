@@ -67,16 +67,18 @@ def make_report(portfolio, prices):
     ]
 
 
-def display_report_with_f_string(report):
-    headers = ("Name", "Shares", "Price", "Change")
+def display_report_with_f_string(report, headers = ("Name", "Shares", "Price", "Change"), column_size=10):
     print(" ".join(f"{h:>10}" for h in headers))
-    print(" ".join(["-" * 10] * 4))
+    print(" ".join(["-" * column_size] * len(headers)))
     for name, shares, price, change in report:
         price = f"${price:.2f}"
-        print(f"{name:>10s} {shares:>10d} {price:>10} {change:>10.2f}")
+        print(f"{name:>10} {shares:>10d} {price:>10} {change:>10.2f}")
 
 
-portfolio = read_portfolio("Data/portfolio.csv")
-prices = read_prices("Data/prices.csv")
-report = make_report(portfolio, prices)
-display_report_with_f_string(report)
+def portfolio_report(portfolio_filename, prices_filename):
+    portfolio = read_portfolio(portfolio_filename)
+    prices = read_prices(prices_filename)
+    report = make_report(portfolio, prices)
+    display_report_with_f_string(report)
+
+portfolio_report('Data/portfolio.csv', 'Data/prices.csv')

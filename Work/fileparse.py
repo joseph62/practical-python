@@ -4,11 +4,24 @@
 
 import csv
 
-def make_converter(types):
+def error_reporting_callback(row, index, error):
+    print(f"Row {index}: Couldn't convert {row}")
+    print(f"Row {index}: Reason {error}")
+
+def noop_error_reporting_callback(row, index, error):
+    pass
+
+def make_converter(types, error_callback):
+    def convert_with_types(row, index):
+        for type_, column in zip(types, row):
+            try:
+                yield type_(column)
+            except ValueError as e:
+                error_callback(row, index, e)
     if types:
-        return lambda row: (type_(row) for type_, row in zip(types, row))
+        return convert_with_types
     else:
-        return lambda row: row
+        return lambda row, _: row
 
 def make_selector(select):
     if select:
@@ -22,23 +35,25 @@ def make_mapper_with_header(converter, selector):
         headers = next(rows)
         rows = (
             converter(
-                column for header, column in zip(headers, row) if selector(header)
+                (column for header, column in zip(headers, row) if selector(header)),
+                index
             )
-            for row in rows if row
+            for index, row in enumerate(rows, start=1) if row
         )
         return [dict(zip(headers, row)) for row in rows]
     return mapper
 
 def make_headerless_mapper(converter): # Does not have header
     def mapper(rows):
-        return [tuple(converter(row)) for row in rows if row]
+        return [tuple(converter(row, index)) for index, row in enumerate(rows, start=1) if row]
     return mapper
 
 
-def make_mapper(types, select, has_headers):
+def make_mapper(types, select, has_headers, silence_errors):
     if select and not has_headers:
         raise ValueError("Cannot select columns without headers")
-    converter = make_converter(types)
+    error_callback = noop_error_reporting_callback if silence_errors else error_reporting_callback
+    converter = make_converter(types, error_callback)
     selector = make_selector(select)
     if has_headers:
         return make_mapper_with_header(converter, selector)
@@ -46,11 +61,11 @@ def make_mapper(types, select, has_headers):
         return make_headerless_mapper(converter)
 
 
-def parse_csv(filename, types=(), select=(), has_headers=True, delimiter=','):
+def parse_csv(filename, types=(), select=(), has_headers=True, silence_errors=False, delimiter=','):
     """
     Parse a CSV file into a list of records
     """
-    mapper = make_mapper(types, select, has_headers)
+    mapper = make_mapper(types, select, has_headers, silence_errors)
     with open(filename) as f:
         rows = csv.reader(f, delimiter=delimiter)
         return mapper(rows)

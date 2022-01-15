@@ -2,38 +2,20 @@
 #
 # Exercise 2.4
 
-import csv
+from fileparse import parse_csv
 
 
 def read_portfolio(filename):
-    portfolio = []
-    with open(filename) as f:
-        rows = csv.reader(f)
-        headers = next(rows)
-        for row in rows:
-            holding = dict(zip(headers, row))
-            try:
-                holding['shares'] = int(holding['shares'])
-                holding['price'] = float(holding['price'])
-                portfolio.append(
-                    holding
-                )
-            except ValueError:
-                print("Warning! Failed to parse shares or price for symbol", symbol)
-    return portfolio
+    return parse_csv(
+        filename, select=["name", "shares", "price"], types=[str, int, float]
+    )
 
 
 def read_prices(filename):
-    prices = {}
-    with open(filename, "rt") as f:
-        for row in csv.reader(f):
-            if row:
-                name, price = row
-                prices[name] = float(price)
-    return prices
+    return dict(parse_csv(filename, types=[str, float], has_headers=False))
 
 
-def can_i_retire(portfolio_filename, prices_filename, retirement_target=100_000_000):
+def can_i_retire(portfolio_filename, prices_filename):
     portfolio = read_portfolio(portfolio_filename)
     prices = read_prices(prices_filename)
 
@@ -67,7 +49,9 @@ def make_report(portfolio, prices):
     ]
 
 
-def display_report_with_f_string(report, headers = ("Name", "Shares", "Price", "Change"), column_size=10):
+def display_report_with_f_string(
+    report, headers=("Name", "Shares", "Price", "Change"), column_size=10
+):
     print(" ".join(f"{h:>10}" for h in headers))
     print(" ".join(["-" * column_size] * len(headers)))
     for name, shares, price, change in report:
@@ -81,4 +65,5 @@ def portfolio_report(portfolio_filename, prices_filename):
     report = make_report(portfolio, prices)
     display_report_with_f_string(report)
 
-portfolio_report('Data/portfolio.csv', 'Data/prices.csv')
+
+portfolio_report("Data/portfolio.csv", "Data/prices.csv")

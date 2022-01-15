@@ -4,19 +4,17 @@
 
 import sys
 
+from report import read_portfolio
+
 
 def portfolio_cost(filename):
-    with open(filename) as f:
-        keys = [key.strip() for key in next(f).split(",")]
-        rows = []
-        for row in f:
-            rows.append({key: col.strip() for key, col in zip(keys, row.split(","))})
+    portfolio = read_portfolio(filename)
 
     total = 0
 
-    for row_number, row in enumerate(rows, start=1):
+    for row_number, row in enumerate(portfolio, start=1):
         try:
-            total += int(row["shares"]) * float(row["price"])
+            total += row["shares"] * row["price"]
         except ValueError:
             print(f"Row {row_number}: Bad row: {row}")
 

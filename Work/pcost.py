@@ -6,7 +6,8 @@ from report import read_portfolio
 
 
 def portfolio_cost(filename):
-    portfolio = read_portfolio(filename)
+    with open(filename, "rt") as f:
+        portfolio = read_portfolio(f)
 
     total = 0
 

@@ -77,12 +77,11 @@ def make_mapper(types, select, has_headers, silence_errors):
 
 
 def parse_csv(
-    filename, types=(), select=(), has_headers=True, silence_errors=False, delimiter=","
+    file, types=(), select=(), has_headers=True, silence_errors=False, delimiter=","
 ):
     """
     Parse a CSV file into a list of records
     """
     mapper = make_mapper(types, select, has_headers, silence_errors)
-    with open(filename) as f:
-        rows = csv.reader(f, delimiter=delimiter)
-        return mapper(rows)
+    rows = csv.reader(file, delimiter=delimiter)
+    return mapper(rows)

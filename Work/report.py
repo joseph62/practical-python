@@ -66,4 +66,18 @@ def portfolio_report(portfolio_filename, prices_filename):
     display_report_with_f_string(report)
 
 
-portfolio_report("Data/portfolio.csv", "Data/prices.csv")
+def main(argv):
+    if len(argv) == 3:
+        portfolio_filename = argv[1]
+        price_filename = argv[2]
+    else:
+        portfolio_filename = "Data/portfolio.csv"
+        price_filename = "Data/prices.csv"
+
+    portfolio_report(portfolio_filename, price_filename)
+
+
+if __name__ == "__main__":
+    import sys
+
+    main(sys.argv)

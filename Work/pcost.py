@@ -9,15 +9,7 @@ def portfolio_cost(filename):
     with open(filename, "rt") as f:
         portfolio = read_portfolio(f)
 
-    total = 0
-
-    for row_number, row in enumerate(portfolio, start=1):
-        try:
-            total += row["shares"] * row["price"]
-        except ValueError:
-            print(f"Row {row_number}: Bad row: {row}")
-
-    return total
+    return sum(position.cost() for position in portfolio)
 
 
 def main(argv):

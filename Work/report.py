@@ -3,12 +3,16 @@
 # Exercise 2.4
 
 from fileparse import parse_csv
+from stock import Stock
 
 
 def read_portfolio(filename):
-    return parse_csv(
-        filename, select=["name", "shares", "price"], types=[str, int, float]
-    )
+    return [
+        Stock(**s)
+        for s in parse_csv(
+            filename, select=["name", "shares", "price"], types=[str, int, float]
+        )
+    ]
 
 
 def read_prices(filename):
@@ -40,10 +44,10 @@ def can_i_retire(portfolio_filename, prices_filename):
 def make_report(portfolio, prices):
     return [
         (
-            position["name"],
-            position["shares"],
-            prices[position["name"]],
-            prices[position["name"]] - position["price"],
+            position.name,
+            position.shares,
+            prices[position.name],
+            prices[position.name] - position.price,
         )
         for position in portfolio
     ]

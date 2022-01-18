@@ -4,6 +4,7 @@
 
 from fileparse import parse_csv
 from stock import Stock
+from tableformat import CsvTableFormatter, HtmlTableFormatter, TextTableFormatter
 
 
 def read_portfolio(filename):
@@ -63,26 +64,47 @@ def display_report_with_f_string(
         print(f"{name:>10} {shares:>10d} {price:>10} {change:>10.2f}")
 
 
-def portfolio_report(portfolio_filename, prices_filename):
-    with (
-        open(portfolio_filename, "rt") as portfolio_file,
-        open(prices_filename, "rt") as prices_file,
-    ):
-        portfolio = read_portfolio(portfolio_file)
-        prices = read_prices(prices_file)
+def display_report(report, formatter):
+    formatter.headings(["Name", "Shares", "Price", "Change"])
+    for name, shares, price, change in report:
+        formatter.row([name, str(shares), f"{price:0.2f}", f"{change:0.2f}"])
+
+
+def portfolio_report(portfolio_file, prices_file, fmt="txt"):
+    portfolio = read_portfolio(portfolio_file)
+    prices = read_prices(prices_file)
+
     report = make_report(portfolio, prices)
-    display_report_with_f_string(report)
+
+    match fmt:
+        case "txt":
+            formatter = TextTableFormatter()
+        case "csv":
+            formatter = CsvTableFormatter()
+        case "html":
+            formatter = HtmlTableFormatter()
+        case _:
+            raise RuntimeError(f"Unknown format {fmt}")
+
+    display_report(report, formatter)
 
 
 def main(argv):
-    if len(argv) == 3:
-        portfolio_filename = argv[1]
-        price_filename = argv[2]
+    if len(argv) == 4:
+        _, portfolio_filename, price_filename, fmt = argv
+    elif len(argv) == 3:
+        _, portfolio_filename, price_filename = argv
+        fmt = "txt"
     else:
         portfolio_filename = "Data/portfolio.csv"
         price_filename = "Data/prices.csv"
+        fmt = "txt"
 
-    portfolio_report(portfolio_filename, price_filename)
+    with (
+        open(portfolio_filename) as portfolio_file,
+        open(price_filename) as price_file,
+    ):
+        portfolio_report(portfolio_file, price_file, fmt=fmt)
 
 
 if __name__ == "__main__":

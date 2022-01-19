@@ -21,7 +21,7 @@ class TextTableFormatter(TableFormatter):
 
     def row(self, row):
         for column in row:
-            print(f"{column:>10s}", end=" ")
+            print(f"{column:>10}", end=" ")
         print()
 
 
@@ -45,3 +45,10 @@ class HtmlTableFormatter(TableFormatter):
         for column in row:
             print(f"<td>{column}</td>", end="")
         print("</tr>")
+
+
+def print_table(objs, headings, formatter):
+    formatter.headings(headings)
+
+    for obj in objs:
+        formatter.row(getattr(obj, h) for h in headings)

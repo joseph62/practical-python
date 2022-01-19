@@ -27,6 +27,7 @@ class Stock:
         self.shares -= shares_to_sell
 
     def __str__(self):
-        return f"Stock({self.name} {self.shares}@{self.price:0.2f})"
+        return f"{self.name} {self.shares}@{self.price:0.2f}"
 
-    __repr__ = __str__
+    def __repr__(self):
+        return f"Stock({self.name!r}, {self.shares!r}, {self.price!r})"

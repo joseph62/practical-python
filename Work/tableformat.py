@@ -52,3 +52,7 @@ def print_table(objs, headings, formatter):
 
     for obj in objs:
         formatter.row(getattr(obj, h) for h in headings)
+
+
+class FormatError(Exception):
+    pass

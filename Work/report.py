@@ -4,7 +4,12 @@
 
 from fileparse import parse_csv
 from stock import Stock
-from tableformat import CsvTableFormatter, HtmlTableFormatter, TextTableFormatter
+from tableformat import (
+    CsvTableFormatter,
+    HtmlTableFormatter,
+    TextTableFormatter,
+    FormatError,
+)
 
 
 def read_portfolio(filename):
@@ -84,7 +89,7 @@ def portfolio_report(portfolio_file, prices_file, fmt="txt"):
         case "html":
             formatter = HtmlTableFormatter()
         case _:
-            raise RuntimeError(f"Unknown format {fmt}")
+            raise FormatError(f"Unknown format {fmt}")
 
     display_report(report, formatter)
 

@@ -9,7 +9,7 @@ def portfolio_cost(filename):
     with open(filename, "rt") as f:
         portfolio = read_portfolio(f)
 
-    return sum(position.cost() for position in portfolio)
+    return sum(position.cost for position in portfolio)
 
 
 def main(argv):

@@ -4,6 +4,7 @@
 
 from fileparse import parse_csv
 from stock import Stock
+from portfolio import Portfolio
 from tableformat import (
     CsvTableFormatter,
     HtmlTableFormatter,
@@ -13,12 +14,12 @@ from tableformat import (
 
 
 def read_portfolio(filename):
-    return [
+    return Portfolio([
         Stock(**s)
         for s in parse_csv(
             filename, select=["name", "shares", "price"], types=[str, int, float]
         )
-    ]
+    ])
 
 
 def read_prices(filename):

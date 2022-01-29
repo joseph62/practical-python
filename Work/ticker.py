@@ -5,24 +5,19 @@ import report
 
 
 def select_columns(rows, indices):
-    for row in rows:
-        yield [row[index] for index in indices]
+    return ([row[index] for index in indices] for row in rows)
 
 
 def convert_types(rows, types):
-    for row in rows:
-        yield [f(val) for f, val in zip(types, row)]
+    return ([f(val) for f, val in zip(types, row)] for row in rows)
 
 
 def make_dicts(rows, headers):
-    for row in rows:
-        yield dict(zip(headers, row))
+    return (dict(zip(headers, row)) for row in rows)
 
 
 def filter_symbols(rows, symbols):
-    for row in rows:
-        if row["name"] in symbols:
-            yield row
+    return (row for row in rows if row["name"] in symbols)
 
 
 def parse_stock_data(lines):

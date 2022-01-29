@@ -54,5 +54,16 @@ def print_table(objs, headings, formatter):
         formatter.row(getattr(obj, h) for h in headings)
 
 
+def get_formatter(format):
+    if format == "txt":
+        return TextTableFormatter()
+    elif format == "csv":
+        return CsvTableFormatter()
+    elif format == "html":
+        return HtmlTableFormatter()
+    else:
+        raise FormatError(f"No formatter for {format}")
+
+
 class FormatError(Exception):
     pass

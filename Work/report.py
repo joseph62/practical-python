@@ -5,21 +5,23 @@
 from fileparse import parse_csv
 from stock import Stock
 from portfolio import Portfolio
-from tableformat import (
-    CsvTableFormatter,
-    HtmlTableFormatter,
-    TextTableFormatter,
-    FormatError,
-)
+from tableformat import get_formatter
 
 
-def read_portfolio(filename):
-    return Portfolio([
-        Stock(**s)
-        for s in parse_csv(
-            filename, select=["name", "shares", "price"], types=[str, int, float]
-        )
-    ])
+def read_portfolio(filename, silence_errors=False):
+    columns = ["name", "shares", "price"]
+    return Portfolio(
+        [
+            Stock(**s)
+            for s in parse_csv(
+                filename,
+                select=columns,
+                types=[str, int, float],
+                silence_errors=silence_errors,
+            )
+            if all(column in s for column in columns)
+        ]
+    )
 
 
 def read_prices(filename):
@@ -82,15 +84,7 @@ def portfolio_report(portfolio_file, prices_file, fmt="txt"):
 
     report = make_report(portfolio, prices)
 
-    match fmt:
-        case "txt":
-            formatter = TextTableFormatter()
-        case "csv":
-            formatter = CsvTableFormatter()
-        case "html":
-            formatter = HtmlTableFormatter()
-        case _:
-            raise FormatError(f"Unknown format {fmt}")
+    formatter = get_formatter(fmt)
 
     display_report(report, formatter)
 

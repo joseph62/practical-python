@@ -9,19 +9,7 @@ from tableformat import get_formatter
 
 
 def read_portfolio(filename, silence_errors=False):
-    columns = ["name", "shares", "price"]
-    return Portfolio(
-        [
-            Stock(**s)
-            for s in parse_csv(
-                filename,
-                select=columns,
-                types=[str, int, float],
-                silence_errors=silence_errors,
-            )
-            if all(column in s for column in columns)
-        ]
-    )
+    return Portfolio.from_csv(filename, silence_errors=silence_errors)
 
 
 def read_prices(filename):
